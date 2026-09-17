@@ -1,0 +1,16 @@
+<idea-plugin>
+  <id>io.deepseek.harness.ide-bridge</id>
+  <name>DSH IDE Bridge</name>
+  <vendor>DeepSeek Harness Community</vendor>
+  <description><![CDATA[
+    Authenticated local bridge that lets DeepSeek Harness query code intelligence
+    and perform guarded edits in IntelliJ IDEA, PyCharm, WebStorm, GoLand, and
+    other IntelliJ Platform IDEs.
+  ]]></description>
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.lang</depends>
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceImplementation="io.deepseek.harness.idebridge.BridgeService"/>
+    <postStartupActivity implementation="io.deepseek.harness.idebridge.BridgeStartupActivity"/>
+  </extensions>
+</idea-plugin>

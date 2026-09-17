@@ -1,0 +1,70 @@
+{
+  "name": "dsh-ide-bridge",
+  "displayName": "DSH IDE Bridge",
+  "description": "Lets an authenticated local DeepSeek Harness plugin query and control this IDE window.",
+  "version": "0.2.0",
+  "publisher": "local",
+  "license": "MIT",
+  "files": ["extension.js", "README.md", "LICENSE"],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Other", "Programming Languages"],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:dshIdeBridge.restart",
+    "onCommand:dshIdeBridge.showStatus"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "dshIdeBridge.restart",
+        "title": "DSH IDE Bridge: Restart Bridge"
+      },
+      {
+        "command": "dshIdeBridge.showStatus",
+        "title": "DSH IDE Bridge: Show Status"
+      }
+    ],
+    "configuration": {
+      "title": "DSH IDE Bridge",
+      "properties": {
+        "dshIdeBridge.port": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 65535,
+          "description": "Loopback TCP port. Zero selects an available port automatically."
+        },
+        "dshIdeBridge.discoveryDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Optional discovery directory. Empty uses the operating system temporary directory."
+        },
+        "dshIdeBridge.allowOutsideWorkspace": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow bridge file operations outside open workspace folders."
+        },
+        "dshIdeBridge.allowedCommands": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [
+            "editor.action.formatDocument",
+            "editor.action.organizeImports",
+            "workbench.action.files.save",
+            "workbench.action.files.saveAll",
+            "workbench.action.navigateBack",
+            "workbench.action.navigateForward",
+            "workbench.action.showErrorsWarnings",
+            "workbench.action.quickOpen",
+            "workbench.action.gotoSymbol",
+            "workbench.action.findInFiles"
+          ],
+          "description": "Commands the ide_command tool may execute."
+        }
+      }
+    }
+  }
+}

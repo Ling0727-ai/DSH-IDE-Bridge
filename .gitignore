@@ -1,0 +1,13 @@
+.reference/
+.tools/
+.test-dsh-home/
+.test-install/
+test-install-temp/
+.codex/
+.idea/
+node_modules/
+*.tgz
+dist/*0.1.0*
+jetbrains-extension/.gradle/
+jetbrains-extension/.intellijPlatform/
+jetbrains-extension/build/
