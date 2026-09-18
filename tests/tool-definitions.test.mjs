@@ -40,6 +40,29 @@ test('renders symbols as compact lines instead of verbose JSON', () => {
   assert.ok(rendered.length < JSON.stringify(value, null, 2).length / 3)
 })
 
+test('filters local variables and anonymous function expressions by default', () => {
+  const tools = createIdeTools({ request: async () => ({}) })
+  const symbolTool = tools.find(tool => tool.name === 'ide_symbols')
+  const value = {
+    symbols: [
+      { name: 'DEFAULT_LIMIT', namePath: 'DEFAULT_LIMIT', kind: 'JSVariableImpl', path: 'src/app.js', range: { start: { line: 1, column: 7 } } },
+      { name: 'run', namePath: 'Controller/run', kind: 'JSFunctionImpl', path: 'src/app.js', range: { start: { line: 5, column: 3 }, end: { line: 10, column: 4 } } },
+      { name: 'result', namePath: 'result', kind: 'JSVariableImpl', path: 'src/app.js', range: { start: { line: 6, column: 9 }, end: { line: 6, column: 15 } } },
+      { name: 'callback', namePath: 'callback', kind: 'JSFunctionExpressionImpl', path: 'src/app.js', range: { start: { line: 7, column: 9 }, end: { line: 9, column: 4 } } },
+    ],
+    truncated: false,
+  }
+  const compact = symbolTool.output.render({}, value)[0].text
+  assert.match(compact, /DEFAULT_LIMIT/)
+  assert.match(compact, /Controller\/run/)
+  assert.doesNotMatch(compact, /result/)
+  assert.doesNotMatch(compact, /callback/)
+
+  const complete = symbolTool.output.render({ include_low_value: true }, value)[0].text
+  assert.match(complete, /result/)
+  assert.match(complete, /callback/)
+})
+
 test('omits blank hints and renders actionable diagnostics on one line', () => {
   const tools = createIdeTools({ request: async () => ({}) })
   const diagnosticTool = tools.find(tool => tool.name === 'ide_diagnostics')

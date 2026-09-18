@@ -588,14 +588,26 @@ public final class BridgeService implements Disposable {
 
     private boolean isLowValueSymbol(PsiNamedElement element) {
         String kind = element.getClass().getSimpleName();
-        return kind.contains("Import")
+        if (kind.contains("Import")
                 || kind.contains("ImportedBinding")
                 || kind.contains("Parameter")
                 || kind.contains("Property")
                 || kind.contains("Field")
                 || kind.contains("Reference")
                 || kind.contains("DefinitionExpression")
-                || kind.contains("Literal");
+                || kind.contains("FunctionExpression")
+                || kind.contains("Literal")) return true;
+
+        if (!kind.contains("Variable")) return false;
+        PsiElement ancestor = element.getParent();
+        while (ancestor != null && !(ancestor instanceof PsiFile)) {
+            String ancestorKind = ancestor.getClass().getSimpleName();
+            if (ancestorKind.contains("Function")
+                    || ancestorKind.contains("Method")
+                    || ancestorKind.contains("Lambda")) return true;
+            ancestor = ancestor.getParent();
+        }
+        return false;
     }
 
     private String symbolPath(PsiNamedElement element) {

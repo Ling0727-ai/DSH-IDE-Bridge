@@ -58,6 +58,22 @@ test('discovers the bridge and exchanges an authenticated request', async t => {
   assert.deepEqual(await client.request('status'), { connected: true })
 })
 
+test('summarizes live IDE windows for automatic prompt context without secrets', async t => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'dsh-ide-context-'))
+  const closeA = await createMockBridge(directory, { name: 'a', ide: 'JetBrains', token: 'secret-a', workspaceFolders: ['C:/work/a'] })
+  const closeB = await createMockBridge(directory, { name: 'b', ide: 'Visual Studio Code', token: 'secret-b', workspaceFolders: ['C:/work/b'] })
+  t.after(async () => {
+    await Promise.all([closeA(), closeB()])
+    await rm(directory, { recursive: true, force: true })
+  })
+
+  const context = new IdeBridgeClient({ discoveryDir: directory }).availabilityContext()
+  assert.match(context, /JetBrains \[C:\/work\/a\]/)
+  assert.match(context, /Visual Studio Code \[C:\/work\/b\]/)
+  assert.match(context, /ide_context/)
+  assert.doesNotMatch(context, /secret-a|secret-b/)
+})
+
 test('surfaces structured IDE errors', async t => {
   const bridge = await fixture((socket, request) => {
     socket.end(`${JSON.stringify({

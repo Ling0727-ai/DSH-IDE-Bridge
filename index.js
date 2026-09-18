@@ -5,12 +5,12 @@ export const name = 'dsh-ide-bridge'
 export const inject = ['tools', 'systemPrompt']
 
 const PROMPT = [
-  'A live IDE may be available through ide_* tools.',
-  'Use ide_context to understand the user’s active editor and selection.',
-  'Use ide_symbols and ide_diagnostics when language-service precision is useful.',
-  'Before symbol edits, retrieve the symbol structure or relevant source first.',
-  'Prefer ide_edit exactReplace for guarded textual changes and symbol operations for whole definitions.',
-  'Use ide_command only for explicit IDE actions; the companion extension enforces an allowlist.',
+  'IDE tools are the first choice when the user refers to the current or open file, editor, selection, cursor, diagnostics, symbol definitions, references, implementations, refactoring, or an IDE UI action.',
+  'For those requests, call the relevant ide_* tool before answering instead of guessing from filesystem state.',
+  'Use ide_context for current editor state, ide_symbols for semantic navigation, ide_diagnostics for live IDE findings, and ide_rename_symbol or ide_edit for IDE-backed changes.',
+  'Use read, grep, and glob for broad textual exploration or when no IDE window matches the target workspace.',
+  'Do not call IDE tools for unrelated tasks merely because an IDE is connected.',
+  'When multiple IDE windows are connected, use an absolute file path to bind the intended workspace and never guess.',
 ].join(' ')
 
 export function apply(ctx, config = {}) {
@@ -24,10 +24,21 @@ export function apply(ctx, config = {}) {
     text: PROMPT,
   })
 
+  if (config.autoContext !== false) {
+    ctx.systemPrompt.context({
+      name: 'ide:availability',
+      order: 130,
+      text: () => client.availabilityContext(),
+    })
+  }
+
   for (const tool of tools) ctx.tools.register(tool)
 }
 
 function validateConfig(config) {
+  if (config.autoContext !== undefined && typeof config.autoContext !== 'boolean') {
+    throw new Error('dsh-ide-bridge: autoContext must be a boolean')
+  }
   for (const key of ['timeoutMs', 'maxResponseBytes', 'maxRenderChars']) {
     if (config[key] !== undefined && (!Number.isInteger(config[key]) || config[key] < 1)) {
       throw new Error(`dsh-ide-bridge: ${key} must be a positive integer`)

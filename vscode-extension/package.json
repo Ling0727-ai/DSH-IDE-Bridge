@@ -2,7 +2,7 @@
   "name": "dsh-ide-bridge",
   "displayName": "DSH IDE Bridge",
   "description": "Lets an authenticated local DeepSeek Harness plugin query and control this IDE window.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "local",
   "license": "MIT",
   "files": ["extension.js", "README.md", "LICENSE"],

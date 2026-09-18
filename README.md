@@ -32,16 +32,28 @@ flowchart LR
 
 JetBrains 版当前不暴露 hover 渲染，调用时会明确返回 `IDE_OPERATION_UNSUPPORTED`；其他核心读写能力使用 PSI 和重构 API。`ide_command` 在 JetBrains 版首期支持保存当前文件和保存全部文件。
 
-## 0.2.0 Token 优化
+## 0.3.0 自动调度
+
+插件在每轮模型请求中注入一条紧凑的动态上下文，列出当前连接的 IDE 与工作区，但不会暴露端口、令牌或其他认证数据。系统指导明确要求模型在下列场景优先调用 `ide_*`：当前文件、活动编辑器、选区、光标、实时诊断、定义/引用/实现、IDE 重构，以及显式 IDE 操作。批量文本搜索仍使用 `read`、`grep` 和 `glob`。
+
+项目同时交付 `dsh-ide-bridge` Skill，用于显式调度：
+
+```powershell
+npm run install:skill
+```
+
+安装后可以直接要求模型“使用 dsh-ide-bridge skill 检查当前文件”。Skill 位于 `skills/dsh-ide-bridge/SKILL.md`，安装脚本只创建目录链接；如果目标位置已有非链接文件，脚本会拒绝覆盖。将 `autoContext: false` 写入插件配置可以关闭自动上下文，但不影响 Skill 和工具。
+
+## 0.3.0 Token 优化
 
 - 工具面向模型的结果改为紧凑文本，规范 JSON 仍保留在工具值中。
-- `ide_symbols` 默认只保留类、函数、方法、接口、枚举等高价值符号；传入 `include_low_value: true` 可恢复完整 PSI/LSP 列表。
+- `ide_symbols` 默认只保留类、函数、方法、接口、枚举、顶层变量等高价值符号；0.3.0 进一步过滤函数内部局部变量和匿名函数表达式。传入 `include_low_value: true` 可恢复完整 PSI/LSP 列表。
 - 符号默认上限从 200 降到 50，文档符号默认只取顶层。
 - `ide_diagnostics` 默认只返回 error 和 warning，上限从 200 降到 100，并过滤没有消息的诊断。
 - `ide_context` 的默认附近源码从 4000 字符降到 2000 字符。
 - 编辑后的诊断只返回 warning/error，默认渲染上限从 24000 降到 12000 字符。
 
-这些默认值可以通过工具参数显式放宽，不会删除 IDE 端能力。实测同一份 JetBrains 符号结果的规范 JSON 为 16125 字符，0.2.0 默认模型输出为 914 字符，缩短约 94%。实际比例会随语言和符号结构变化。
+这些默认值可以通过工具参数显式放宽，不会删除 IDE 端能力。实测同一份 JetBrains 符号结果的规范 JSON 为 16125 字符，0.3.0 默认模型输出为 914 字符，缩短约 94%。实际比例会随语言和符号结构变化。
 
 ## 安装
 
@@ -71,12 +83,12 @@ dsh --profile web --dump-config
 
 ### 2A. VS Code / Cursor
 
-从 `dist/` 安装构建好的 `dsh-ide-bridge-vscode-0.2.0.vsix`：
+从 `dist/` 安装构建好的 `dsh-ide-bridge-vscode-0.3.0.vsix`：
 
 ```powershell
-code --install-extension .\dist\dsh-ide-bridge-vscode-0.2.0.vsix
+code --install-extension .\dist\dsh-ide-bridge-vscode-0.3.0.vsix
 # 或
-cursor --install-extension .\dist\dsh-ide-bridge-vscode-0.2.0.vsix
+cursor --install-extension .\dist\dsh-ide-bridge-vscode-0.3.0.vsix
 ```
 
 安装后重载 IDE 窗口。命令面板提供：
@@ -86,7 +98,7 @@ cursor --install-extension .\dist\dsh-ide-bridge-vscode-0.2.0.vsix
 
 ### 2B. JetBrains 系列
 
-在 IDE 中打开 `Settings / Plugins`，点击齿轮菜单，选择 `Install Plugin from Disk...`，然后选择 `dist/` 中的 `dsh-ide-bridge-jetbrains-0.2.0.zip`。安装后重启 IDE。
+在 IDE 中打开 `Settings / Plugins`，点击齿轮菜单，选择 `Install Plugin from Disk...`，然后选择 `dist/` 中的 `dsh-ide-bridge-jetbrains-0.3.0.zip`。安装后重启 IDE。
 
 ### 3. 验证
 
@@ -121,6 +133,7 @@ DSH 插件默认自动发现 IDE，一般不需要配置。可在自己的 profi
     timeoutMs: 30000
     maxResponseBytes: 4194304
     maxRenderChars: 12000
+    autoContext: true
     # discoveryDir: 'D:/custom/discovery'
     # workspaceRoot: 'D:/project'
     # host: 127.0.0.1

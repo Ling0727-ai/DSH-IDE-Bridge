@@ -1,6 +1,6 @@
 {
   "name": "dsh-ide-bridge",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "DeepSeek Harness tools for controlling VS Code-compatible and JetBrains IDEs",
   "type": "module",
   "main": "index.js",
@@ -11,14 +11,17 @@
     "index.js",
     "lib",
     "cordis.patch.yml",
-    "dist/dsh-ide-bridge-vscode-0.2.0.vsix",
-    "dist/dsh-ide-bridge-jetbrains-0.2.0.zip",
+    "dist/dsh-ide-bridge-vscode-0.3.0.vsix",
+    "dist/dsh-ide-bridge-jetbrains-0.3.0.zip",
+    "skills",
+    "scripts/install-skill.mjs",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "test": "node --test",
-    "check": "node --check index.js && node --check lib/bridge-client.js && node --check lib/tool-definitions.js && node --check vscode-extension/extension.js"
+    "check": "node --check index.js && node --check lib/bridge-client.js && node --check lib/tool-definitions.js && node --check vscode-extension/extension.js",
+    "install:skill": "node scripts/install-skill.mjs"
   },
   "keywords": [
     "deepseek-harness",
