@@ -1,3 +1,11 @@
+# DSH IDE Bridge 0.4.0
+
+本次升级增加独立代码语义、项目初始化和持久记忆，共 30 个工具。与 Codex IDE Bridge 1.1.1 共用 `core/` 实现；VS Code/Cursor、JetBrains 的现有 0.3.0 扩展继续兼容。
+
+安装或更新插件时需要安装 npm 依赖（TypeScript、Pyright、ignore）。在 DSH 中重新加载插件后，调用 `initial_instructions` 查看工作流。语义操作可直接使用当前 DSH 会话工作区，或用 `activate_project` 切换该会话的项目。不同会话的激活状态独立。
+
+详细说明见 [独立语义和记忆](CORE.md)、[Serena 能力对照](SERENA-PARITY.md)。
+
 # DSH IDE Bridge
 
 这是一个可安装的 DeepSeek Harness 组合插件，让模型直接读取和操控正在运行的 IDE。当前支持：

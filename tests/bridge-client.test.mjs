@@ -71,6 +71,8 @@ test('summarizes live IDE windows for automatic prompt context without secrets',
   assert.match(context, /JetBrains \[C:\/work\/a\]/)
   assert.match(context, /Visual Studio Code \[C:\/work\/b\]/)
   assert.match(context, /ide_context/)
+  assert.match(context, /ide_diagnostics/)
+  assert.match(context, /do not say you cannot see the editor/)
   assert.doesNotMatch(context, /secret-a|secret-b/)
 })
 

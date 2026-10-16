@@ -1,7 +1,8 @@
 {
   "name": "dsh-ide-bridge",
-  "version": "0.3.0",
-  "description": "DeepSeek Harness tools for controlling VS Code-compatible and JetBrains IDEs",
+  "version": "0.4.0",
+  "description": "DeepSeek Harness IDE tools, standalone semantic editing, project onboarding and persistent memories",
+  "bridgeCore": true,
   "type": "module",
   "main": "index.js",
   "exports": {
@@ -10,6 +11,9 @@
   "files": [
     "index.js",
     "lib",
+    "core",
+    "SERENA-PARITY.md",
+    "CORE.md",
     "cordis.patch.yml",
     "dist/dsh-ide-bridge-vscode-0.3.0.vsix",
     "dist/dsh-ide-bridge-jetbrains-0.3.0.zip",
@@ -31,6 +35,11 @@
     "plugin"
   ],
   "license": "MIT",
+  "dependencies": {
+    "typescript": "5.9.3",
+    "pyright": "1.1.407",
+    "ignore": "7.0.5"
+  },
   "engines": {
     "node": ">=20"
   },

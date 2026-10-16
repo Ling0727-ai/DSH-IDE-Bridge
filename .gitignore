@@ -6,6 +6,7 @@ test-install-temp/
 .codex/
 .idea/
 node_modules/
+work/
 *.tgz
 dist/*0.1.0*
 jetbrains-extension/.gradle/

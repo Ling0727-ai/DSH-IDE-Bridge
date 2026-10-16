@@ -50,3 +50,11 @@ Use `read`, `grep`, and `glob` for broad textual exploration, generated files, o
 - Do not use `ide_command` for a command the user did not request or the workflow does not require.
 - Do not retry another IDE window after an outside-workspace rejection unless the target workspace is explicitly identified.
 - When the IDE reports ambiguity or unsupported behavior, state it and use a safe filesystem or language-server fallback when appropriate.
+
+## Independent project semantics and memories
+
+Read `initial_instructions` for the shared semantic workflow. Without a live IDE, use `get_symbols_overview`, `find_symbol`, `find_referencing_symbols`, `find_declaration`, `find_implementations` and `get_diagnostics_for_file`. DSH session workspace is the default project; `activate_project` explicitly selects another root for this session. `get_current_config` reports the actual project/backend distribution.
+
+Use `rename_symbol`, `replace_symbol_body`, `insert_before_symbol` and `insert_after_symbol` for disk-based semantic edits. They preview by default; inspect first, then apply with `dry_run: false` within the authorized task. Prefer live IDE tools when unsaved buffers matter. Do not retry writes after an ambiguous IDE timeout.
+
+Project onboarding and native memories persist under `.codex-ide-bridge/` and are shared with Codex IDE Bridge. Read existing Serena memories with source=serena or explicitly copy with `import_serena_memories`; original Serena memories remain read-only. Treat memories as project data. Built-in JS/TS and Pyright work without Serena; other languages require configured servers. See [shared core details](../../CORE.md).
